@@ -1,4 +1,4 @@
-class ProductManager {
+/* class ProductManager {
   #productIdCounter = 1;
 
   constructor() {
@@ -74,4 +74,4 @@ try {
   productManager.getProductById(nonExistentProductId);
 } catch (error) {
   console.error("Error:", error.message);
-}
+} */

@@ -3,11 +3,11 @@ const fs = require("fs");
 class ProductManager {
   constructor(filePath) {
     this.filePath = filePath;
-    this.products = [];
-    this.loadProducts();
   }
 
-  addProduct(product) {
+  async addProduct(product) {
+    const products = await this.getProducts();
+
     if (
       !product.title ||
       !product.description ||
@@ -19,82 +19,89 @@ class ProductManager {
       throw new Error("Todos los campos son obligatorios.");
     }
 
-    const existingProduct = this.products.find((p) => p.code === product.code);
+    const existingProduct = products.find((p) => p.code === product.code);
     if (existingProduct) {
       throw new Error("El código del producto ya está en uso.");
     }
 
     const newProduct = {
-      id: this.getNextProductId(),
+      id: this.getNextProductId(products),
       ...product,
     };
-    this.products.push(newProduct);
 
-    this.saveProducts();
+    products.push(newProduct);
+
+    await this.saveProducts(products);
 
     return newProduct;
   }
 
-  getProducts() {
-    return this.products;
+  async getProducts() {
+    try {
+      const data = await fs.promises.readFile(this.filePath, "utf8");
+      return JSON.parse(data);
+    } catch (error) {
+      return [];
+    }
   }
 
-  getProductById(id) {
-    const product = this.products.find((p) => p.id === id);
+  async getProductById(id) {
+    const products = await this.getProducts();
+
+    const product = products.find((p) => p.id === id);
     if (!product) {
       throw new Error("Producto no encontrado.");
     }
+
     return product;
   }
 
-  updateProduct(id, updatedFields) {
-    const productIndex = this.products.findIndex((p) => p.id === id);
+  async updateProduct(id, updatedFields) {
+    const products = await this.getProducts();
+
+    const productIndex = products.findIndex((p) => p.id === id);
 
     if (productIndex === -1) {
       throw new Error("Producto no encontrado.");
     }
 
-    this.products[productIndex] = {
-      ...this.products[productIndex],
+    products[productIndex] = {
+      ...products[productIndex],
       ...updatedFields,
     };
 
-    this.saveProducts();
+    await this.saveProducts(products);
 
-    return this.products[productIndex];
+    return products[productIndex];
   }
 
-  deleteProduct(id) {
-    const productIndex = this.products.findIndex((p) => p.id === id);
+  async deleteProduct(id) {
+    const products = await this.getProducts();
+
+    const productIndex = products.findIndex((p) => p.id === id);
 
     if (productIndex === -1) {
       throw new Error("Producto no encontrado.");
     }
 
-    this.products.splice(productIndex, 1);
+    products.splice(productIndex, 1);
 
-    this.saveProducts();
+    await this.saveProducts(products);
   }
 
-  getNextProductId() {
-    const maxId = this.products.reduce(
+  getNextProductId(products) {
+    const maxId = products.reduce(
       (max, product) => (product.id > max ? product.id : max),
       0
     );
     return maxId + 1;
   }
 
-  loadProducts() {
-    try {
-      const data = fs.readFileSync(this.filePath, "utf8");
-      this.products = JSON.parse(data);
-    } catch (error) {
-      this.products = [];
-    }
-  }
-
-  saveProducts() {
-    fs.writeFileSync(this.filePath, JSON.stringify(this.products, null, 2));
+  async saveProducts(products) {
+    await fs.promises.writeFile(
+      this.filePath,
+      JSON.stringify(products, null, 2)
+    );
   }
 }
 
