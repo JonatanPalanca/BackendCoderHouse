@@ -1,0 +1,11 @@
+<h1>Bienvenido a Nuestra Tienda en Línea</h1>
+
+<div>
+  {{#each products}}
+    <ul>
+      <li>{{this.title}}</li>
+      <li>${{this.price}}</li>
+      <li>{{this.id}}</li>
+    </ul>
+  {{/each}}
+</div>

@@ -1,0 +1,13 @@
+{{#each carts}}
+  <ul>
+    <li>Nombre del usuario: {{this.userId}}</li>
+    <li>Productos:
+      <ul>
+        {{#each this.products}}
+          <li>ID del producto: {{this.productId}}</li>
+          <li>Cantidad: {{this.quantity}}</li>
+        {{/each}}
+      </ul>
+    </li>
+  </ul>
+{{/each}}
