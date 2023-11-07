@@ -1,0 +1,42 @@
+{{!-- <div>
+     {{#each products}}
+    <h1>Product</h1>
+    <p>Title: {{this.title}}</p>
+    <p>Price: {{this.price}}</p>
+    <p>Stock: {{this.stock}}</p>
+     {{/each}}
+</div> --}}
+
+<div id="container">
+  {{#each products}}
+    <ul>
+      <li>title: {{this.title}}</li>
+      <li>description: {{this.description}}</li>
+      <li>code: {{this.code}}</li>
+      <li>price: {{this.price}}</li>
+      <li>status: {{this.status}}</li>
+      <li>stock: {{this.stock}}</li>
+      <li>category: {{this.category}}</li>
+      <li>id: {{this._id}}</li>
+    </ul>
+    <div>
+      <button
+        class="addButton"
+        data-title="{{this.title}}"
+        data-price="{{this.price}}"
+        onclick="addToCart(this)"
+      >Agregar al carrito</button>
+    </div>
+    <br />
+  {{/each}}
+  {{#if hasPrevPage}}
+    {{!-- <a href="/?page={{prevPage}}&limit={{limit}}"><button>Anterior</button></a> --}}
+    <a href="{{prevLink}}"><button>Anterior</button></a>
+  {{/if}}
+  {{#if hasNextPage}}
+    <a href="{{nextLink}}"><button>Siguiente</button></a>
+    {{!-- <a href="/?page={{nextPage}}&limit={{limit}}"><button>Siguiente</button></a> --}}
+  {{/if}}
+</div>
+
+<script src="/js/cart.js"></script>
