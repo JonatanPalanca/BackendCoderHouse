@@ -7,9 +7,7 @@ import CartManager from "../dao/dbManager/carts.manager.js";
 import ProductManager from "../dao/dbManager/products.manager.js";
 import { pid } from "process";
 const router = Router();
-const app = express();
 
-app.use(express.json());
 const cartManager = new CartManager(cartPath);
 const productManager = new ProductManager(productPath);
 
@@ -154,7 +152,7 @@ router.put("/:cid", async (req, res) => {
   }
 });
 
-/*  router.put("/:cid/products/:pid", async (req, res) => {
+router.put("/:cid/products/:pid", async (req, res) => {
   try {
     const cid = req.params.cid;
     const pid = req.params.pid;
@@ -186,29 +184,6 @@ router.put("/:cid", async (req, res) => {
     }
     const result = await cartManager.update(cid, { products: cart.products });
     res.status(201).send({ status: "success", payload: result });
-  } catch (error) {
-    console.log(error.message);
-    res.status(500).send({ error: error.message });
-  }
-});*/
-
-router.put("/carts/:cartId/products", async (req, res) => {
-  const { cartId } = req.params;
-  const { quantity, title, price } = req.body;
-
-  try {
-    // Lógica para actualizar el carrito en la base de datos
-    const updatedCart = await cartManager.update(cartId, {
-      quantity,
-      title,
-      price,
-    });
-
-    res.json({
-      status: "success",
-      message: "Product added to cart",
-      updatedCart,
-    });
   } catch (error) {
     console.log(error.message);
     res.status(500).send({ error: error.message });

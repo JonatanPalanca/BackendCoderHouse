@@ -9,9 +9,7 @@ import { productsModel } from "../dao/dbManager/models/products.model.js";
 const productManager = new ProductManager(productPath);
 const chatManager = new ChatManager();
 const cartManager = new CartManager();
-const app = express();
 
-app.use(express.json());
 router.get("/realtimeproducts", async (req, res) => {
   try {
     const products = await productManager.getAll();
