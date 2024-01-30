@@ -1,0 +1,36 @@
+import logger from "../../utils/logger.js";
+import EErrors from "./enums.js";
+
+export default (error, req, res, next) => {
+  // Loggea el error utilizando el logger
+  logger.error(`${error.name} - ${error.message}`, {
+    code: error.code,
+    cause: error.cause,
+  });
+
+  switch (error.code) {
+    case EErrors.INVALID_TYPE_ERROR:
+      res.status(400).send({
+        status: "error",
+        error: error.name,
+        description: error.cause,
+      });
+      break;
+    case EErrors.DATABASE_ERROR:
+      res.status(500).send({
+        status: "error",
+        error: error.name,
+        description: error.cause,
+      });
+      break;
+    default:
+      res.status(500).send({
+        status: "error",
+        error: error.name,
+        description: error.cause,
+      });
+      break;
+  }
+
+  next();
+};
