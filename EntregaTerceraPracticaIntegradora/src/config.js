@@ -1,25 +1,17 @@
 import dotenv from "dotenv";
 import { Command } from "commander";
-import logger from "../utils/logger.js";
 
 const program = new Command();
 
 program.option("--mode <modo>", "variable de ambiente", "DEVELOPMENT");
 program.parse();
 
-const environment = program.opts().mode;
+export const environment = program.opts().mode;
 
-try {
-  dotenv.config({
-    path:
-      environment === "DEVELOPMENT"
-        ? "./.env.development"
-        : "./.env.production",
-  });
-} catch (error) {
-  logger.error("Error loading .env file:", error);
-  process.exit(1);
-}
+dotenv.config({
+  path:
+    environment === "DEVELOPMENT" ? "./.env.development" : "./.env.production",
+});
 
 const configs = {
   port: process.env.PORT,
@@ -29,7 +21,11 @@ const configs = {
   privateKeyJWT: process.env.PRIVATE_KEY_JWT,
   gitHubClientSecret: process.env.GITHUB_CLIENT_SECRET,
   persistence: process.env.PERSISTENCE,
-  gitHubcallbackURL: process.env.CALLBACK_URL,
+  userNodemailer: process.env.USER_NODEMAILER,
+  passwordNodemailer: process.env.PASSWORD_NODEMAILER,
+  twilio_account_SID: process.env.TWILIO_ACCOUNT_SID,
+  twilio_auth_token: process.env.TWILIO_AUTH_TOKEN,
+  twilio_number: process.env.TWILIO_NUMBER,
 };
 
 export default configs;

@@ -1,4 +1,4 @@
-import productsModel from "./models/products.model.js";
+import { productsModel } from "./models/products.model.js";
 
 export default class Products {
   constructor() {}
@@ -6,16 +6,6 @@ export default class Products {
   getAll = async () => {
     const products = await productsModel.find().lean();
     return products;
-  };
-
-  create = async (product) => {
-    try {
-      const result = await productsModel.create(product);
-      return { status: "ok", data: result };
-    } catch (error) {
-      console.error("Error creating product:", error);
-      return { status: "error", message: "Error creating product" };
-    }
   };
 
   getProductById = async (id) => {

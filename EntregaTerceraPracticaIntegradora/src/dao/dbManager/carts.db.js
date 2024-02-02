@@ -18,6 +18,11 @@ export default class Carts {
     return result;
   };
 
+  // updateOne = async (cid,pid,productos) =>{
+  //     const result = await cartsModel.updateOne({_id:cid},productos);
+  //     return result;
+  // }
+
   delete = async (cid) => {
     const result = await cartsModel.updateOne(
       { _id: cid },
@@ -35,6 +40,7 @@ export default class Carts {
   };
 
   save = async () => {
+    //Crea carrito vacío
     const result = await cartsModel.create({});
     return result;
   };

@@ -1,8 +1,6 @@
-import logger from "../../utils/logger.js";
 import EErrors from "./enums.js";
-
+import { logger } from "../../logger.js";
 export default (error, req, res, next) => {
-  // Loggea el error utilizando el logger
   logger.error(`${error.name} - ${error.message}`, {
     code: error.code,
     cause: error.cause,

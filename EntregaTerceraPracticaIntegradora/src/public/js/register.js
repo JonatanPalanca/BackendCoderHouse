@@ -5,21 +5,31 @@ form.addEventListener("submit", async (e) => {
   const data = new FormData(form);
   const obj = {};
 
-  try {
-    const response = await fetch("/api/sessions/register", {
+  const responseCart = await fetch("/api/carts", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (responseCart.ok) {
+    const carrito = await responseCart.json();
+    obj.cart = carrito.payload._id;
+
+    data.forEach((value, key) => (obj[key] = value));
+
+    const responseUser = await fetch("/api/users/register", {
       method: "POST",
-      body: JSON.stringify(Object.fromEntries(data)),
+      body: JSON.stringify(obj),
       headers: {
         "Content-Type": "application/json",
       },
     });
 
-    if (response.ok) {
+    if (responseUser.ok) {
       window.location.replace("/");
     } else {
-      console.error("Error al registrar al usuario:", response.statusText);
+      console.error("Error en el registro:", responseUser.statusText);
     }
-  } catch (error) {
-    console.error("Error en el registro:", error);
   }
 });

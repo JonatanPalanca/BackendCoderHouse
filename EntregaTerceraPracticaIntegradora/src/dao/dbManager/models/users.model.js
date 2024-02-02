@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { accessRolesEnum } from "../../../config/enums.js";
 
 const usersCollection = "users";
 
@@ -37,11 +36,6 @@ const usersSchema = new mongoose.Schema({
   role: {
     type: String,
     default: "user",
-    enum: [
-      accessRolesEnum.USER,
-      accessRolesEnum.PREMIUM,
-      accessRolesEnum.ADMIN,
-    ],
   },
 });
 

@@ -1,54 +1,37 @@
-import { getUserCurrent as getUserCurrentService } from "../services/users.service.js";
-import logger from "../utils/logger.js";
-import { createHash } from "../utils.js";
+import {
+  getUserCurrent as getUserCurrentService,
+  getUserById as getUserByIdService,
+  updatePremiumStatus as updatePremiumStatusService,
+} from "../services/users.service.js";
 
 export const getUserCurrent = async (req, res) => {
   try {
     const email = req.user.email;
     const user = await getUserCurrentService(email);
-    res.status(200).send({ status: "success", payload: user });
+    return res.status(200).send({ status: "success", payload: user });
   } catch (error) {
-    logger.error(error);
-    res.status(500).send({ status: "error", error: error.message });
+    return res.send({ status: "error", error: error });
   }
 };
 
-export const updateUserPassword = async (email, newPassword) => {
+export const updatePremiumStatus = async (req, res) => {
   try {
-    const hashedPassword = createHash(newPassword);
-
-    const isUpdated = await updateUserPasswordService(email, hashedPassword);
-
-    return isUpdated;
+    const { uid } = req.params;
+    const user = await getUserByIdService(uid);
+    if (!user) {
+      return res
+        .status(404)
+        .send({ status: "error", message: "User not found" });
+    }
+    if (user.role == "admin") {
+      return res
+        .status(404)
+        .send({ status: "error", message: "User is Admin" });
+    }
+    const role = user.role == "user" ? "premium" : "user";
+    const result = await updatePremiumStatusService(uid, role);
+    return res.status(200).send({ status: "success", payload: result });
   } catch (error) {
-    console.error("Error actualizando la contraseña:", error);
-    return false;
-  }
-};
-
-export const registerUser = async (req, res) => {
-  try {
-    const userData = req.body;
-
-    // Lógica para registrar al usuario
-    const newUser = await registerUserService(userData);
-
-    // Luego, crea un carro y asigna el carro al usuario
-    const cart = await createCartService();
-    newUser.cart = cart._id;
-
-    // Guarda los cambios en el usuario para agregar el carro
-    await newUser.save();
-
-    // Devuelve una respuesta exitosa
-    res
-      .status(201)
-      .send({ status: "success", message: "User registered successfully" });
-  } catch (error) {
-    // Maneja errores aquí
-    console.error(error);
-
-    // Devuelve una respuesta de error
-    res.status(500).send({ status: "error", message: "Internal Server Error" });
+    res.status(500).send({ error: error.message });
   }
 };

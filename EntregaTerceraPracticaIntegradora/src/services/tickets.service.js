@@ -3,8 +3,8 @@ import { TicketManager } from "../dao/factory.js";
 const ticketManager = new TicketManager();
 const ticketManagerRepository = new TicketManagerRepository(ticketManager);
 
+//const orderNumber = Date.now() + Math.floor(Math.random() * 100000 + 1);
 export const ticketService = async (user, totalPrice) => {
-  console.log(user, totalPrice);
   const ticket = {
     code: Date.now() + Math.floor(Math.random() * 100000 + 1),
     purchase_datetime: new Date(),

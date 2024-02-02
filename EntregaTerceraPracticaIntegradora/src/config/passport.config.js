@@ -1,15 +1,13 @@
 import passport from "passport";
 import jwt from "passport-jwt";
 import local from "passport-local";
-import GitHubStrategy from "passport-github2";
 import usersModel from "../dao/dbManager/models/users.model.js";
-import { createHash, isValidPassword } from "../utils.js";
+import { createHash, isValidPassword, cartPath } from "../utils.js";
+import GitHubStrategy from "passport-github2";
 import CartManager from "../dao/dbManager/carts.db.js";
-import configs from "../config/config.js";
+import configs from "../config.js";
 import { passportStrategiesEnum } from "./enums.js";
-import logger from "../utils/logger.js";
 import { UserManager } from "../dao/factory.js";
-import { cartPath } from "../utils.js";
 
 const userManager = new UserManager();
 const cartManager = new CartManager(cartPath);
@@ -24,7 +22,7 @@ const initializePassport = () => {
       {
         clientID: "Iv1.22658f70d990ed1c",
         clientSecret: configs.gitHubClientSecret,
-        callbackURL: configs.gitHubcallbackURL,
+        callbackURL: "http://localhost:8080/api/sessions/github-callback",
         scope: ["user:email"],
       },
       async (accessToken, refreshToken, profile, done) => {
@@ -32,6 +30,7 @@ const initializePassport = () => {
           const carrito = await cartManager.save();
 
           const email = profile.emails[0].value;
+
           const user = await userManager.getUserByEmail(email);
 
           if (!user) {
@@ -50,7 +49,6 @@ const initializePassport = () => {
             return done(null, user);
           }
         } catch (error) {
-          logger.error(error);
           return done(`Incorrect credentials`);
         }
       }
@@ -139,14 +137,13 @@ const initializePassport = () => {
     )
   );
 
-  // Serialización y Deserialización
+  //Serializaccion y DeSerializaccion
   passport.serializeUser((user, done) => {
     done(null, user._id);
   });
 
   passport.deserializeUser(async (id, done) => {
     const user = await usersModel.findById(id);
-    done(null, user);
   });
 };
 
@@ -166,7 +163,6 @@ export const passportCall = (strategy) => {
       function (err, user, info) {
         if (err) return next(err);
         if (!user) {
-          logger.error(info.messages ? info.messages : info.toString());
           return res.status(401).send({
             status: "error",
             error: info.messages ? info.messages : info.toString(),

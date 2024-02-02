@@ -1,9 +1,10 @@
 <div class="addButton" id="{{user.cart._id}}">
-     <p>Bienvenido {{user.first_name}}. Usted esta logueado como {{user.role}}! Su carro de compras es {{user.cart._id}}</p>
-     <a href="/api/sessions/logout"><button>Salir</button></a>
-     {{#each products}}
+     
+     <p>Welcome {{user.first_name}}. You are logged in as {{user.role}}! Your cart is {{user.cart._id}}</p>  
+     <a href="/api/users/logout"><button>Salir</button></a>
+     {{#each products}} 
  <ul>
-                <li>title: {{this.title}}</li>
+                <li>title: {{this.title}}</li> 
                 <li>description: {{this.description}}</li>
                 <li>code: {{this.code}}</li>
                 <li>price: {{this.price}}</li>
@@ -11,15 +12,18 @@
                 <li>stock: {{this.stock}}</li>
                 <li>category: {{this.category}}</li>
 </ul>
+    
    <div>  <button data-cart-id="{{user.cart._id}}" onclick="addToCart('{{this._id}}','{{../user.cart._id}}')">Agregar al carrito</button></div>
      </br>
      {{/each}}
      {{#if hasPrevPage }}
+    
      <a href="{{prevLink}}"><button>Anterior</button></a>
      {{/if}}
      {{#if hasNextPage }}
       <a href="{{nextLink}}"><button>Siguiente</button></a>
-     {{/if}}
-</div>
+   
+     {{/if}}     
+</div> 
 
 <script src="/js/cart.js"></script>

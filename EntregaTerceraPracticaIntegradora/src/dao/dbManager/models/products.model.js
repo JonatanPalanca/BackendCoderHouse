@@ -1,8 +1,6 @@
 import mongoose from "mongoose";
+const productsCollecion = "products";
 import mongoosePaginate from "mongoose-paginate-v2";
-import { accessRolesEnum } from "../../../config/enums.js";
-
-const productsCollection = "products";
 
 const productsSchema = new mongoose.Schema({
   title: {
@@ -17,11 +15,13 @@ const productsSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  thumbnail: {
+  thumbanil: {
     type: String,
   },
+
   code: {
     type: String,
+
     required: true,
   },
   category: {
@@ -38,13 +38,9 @@ const productsSchema = new mongoose.Schema({
   },
   owner: {
     type: String,
-    ref: "users",
     default: "admin",
   },
 });
 
 productsSchema.plugin(mongoosePaginate);
-
-const productsModel = mongoose.model(productsCollection, productsSchema);
-
-export default productsModel;
+export const productsModel = mongoose.model(productsCollecion, productsSchema);

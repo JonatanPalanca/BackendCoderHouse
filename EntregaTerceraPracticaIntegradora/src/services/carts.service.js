@@ -1,16 +1,11 @@
-//import CartManager from "../dao/dbManager/carts.db.js";
-//import CartManager from '../dao/fileManager/carts.file.js';
 import { CartManager, ProductManager, TicketManager } from "../dao/factory.js";
 import { cartPath, productPath } from "../utils.js";
 import CartManagerRepository from "../repositories/carts.repository.js";
-//import  TicketManagerRepository  from '../repositories/tickets.repository.js';
 import ProductManagerRepository from "../repositories/products.repository.js";
 import { ticketService as generatePurchase } from "./tickets.service.js";
 
 const cartManager = new CartManager(cartPath);
 const cartManagerRepository = new CartManagerRepository(cartManager);
-//const ticketManager = new TicketManager();
-//const ticketManagerRepository= new TicketManagerRepository(ticketManager);
 const productManager = new ProductManager(productPath);
 const productManagerRepository = new ProductManagerRepository(productManager);
 
@@ -27,8 +22,12 @@ export const getCart = async (cid) => {
   const cart = await cartManagerRepository.getCartByIdRepository(cid);
   return cart;
 };
-export const updateCart = async (cid, pid, quantity = 1) => {
+export const updateCart = async (cid, pid, quantity = 1, user) => {
   const cart = await cartManagerRepository.getCartByIdRepository(cid);
+  const product = await productManagerRepository.getProductByIdRepository(pid);
+  if (product.owner === user) {
+    throw new Error("You own this product.");
+  }
   if (cart.products.length === 0) {
     cart.products.push({ product: pid, quantity: quantity });
   } else {

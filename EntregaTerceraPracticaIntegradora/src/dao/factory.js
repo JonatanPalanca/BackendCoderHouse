@@ -1,23 +1,6 @@
-import configs from "../config/config.js";
+import configs from "../config.js";
 
 const persistence = configs.persistence;
-
-const managerMapping = {
-  DB: {
-    Products: "./dbManager/products.db.js",
-    Carts: "./dbManager/carts.db.js",
-    Chat: "./dbManager/chat.db.js",
-    Users: "./dbManager/users.db.js",
-    Tickets: "./dbManager/tickets.db.js",
-  },
-  File: {
-    Products: "./fileManager/products.file.js",
-    Carts: "./fileManager/carts.file.js",
-    Chat: "./fileManager/chat.file.js",
-    Users: "./fileManager/users.file.js",
-    Tickets: "./fileManager/tickets.file.js",
-  },
-};
 
 let CartManager;
 let ProductManager;
@@ -27,17 +10,34 @@ let TicketManager;
 
 switch (persistence) {
   case "DB":
-  case "File":
-    console.log(`Persistence: ${persistence}`);
-    const persistenceMapping = managerMapping[persistence];
-    ProductManager = (await import(persistenceMapping.Products)).default;
-    CartManager = (await import(persistenceMapping.Carts)).default;
-    ChatManager = (await import(persistenceMapping.Chat)).default;
-    UserManager = (await import(persistenceMapping.Users)).default;
-    TicketManager = (await import(persistenceMapping.Tickets)).default;
+    console.log("Persistence: DB");
+
+    const { default: ProductsDB } = await import("./dbManager/products.db.js");
+    ProductManager = ProductsDB;
+    const { default: CartsDB } = await import("./dbManager/carts.db.js");
+    CartManager = CartsDB;
+    const { default: ChatDB } = await import("./dbManager/chat.db.js");
+    ChatManager = ChatDB;
+    const { default: UsersDB } = await import("./dbManager/users.db.js");
+    UserManager = UsersDB;
+    const { default: TicketsDB } = await import("./dbManager/tickets.db.js");
+    TicketManager = TicketsDB;
     break;
-  default:
-    throw new Error("Tipo de persistencia no válido");
+  case "File":
+    console.log("Persistence: File");
+    const { default: ProductsFile } = await import(
+      "./fileManager/products.file.js"
+    );
+    ProductManager = ProductsFile;
+    const { default: CartsFile } = await import("./fileManager/carts.file.js");
+    CartManager = CartsFile;
+    const { default: ChatFile } = await import("./fileManager/chat.file.js");
+    ChatManager = ChatFile;
+    const { default: UsersFile } = await import("./dbManager/users.db.js");
+    UserManager = UsersFile;
+    const { default: TicketsFile } = await import("./dbManager/tickets.db.js");
+    TicketManager = TicketsFile;
+    break;
 }
 
 export { ProductManager, CartManager, ChatManager, UserManager, TicketManager };

@@ -8,7 +8,6 @@ import {
   purchase as purchaseService,
 } from "../services/carts.service.js";
 import { getProductById as getProductByIdService } from "../services/products.service.js";
-import logger from "../utils/logger.js";
 
 export const createCart = async (req, res) => {
   try {
@@ -17,7 +16,7 @@ export const createCart = async (req, res) => {
       .status(201)
       .send({ status: "success", message: "cart created", payload: result });
   } catch (error) {
-    logger.error(error);
+    req.logger.error(error.message);
     res.status(500).send({ error: error.message });
   }
 };
@@ -27,14 +26,13 @@ export const getCart = async (req, res) => {
     const { cid } = req.params;
     const cart = await getCartService(cid);
     if (!cart) {
-      logger.error("Cart not found");
       return res
         .status(404)
         .send({ status: "error", message: "Cart not found" });
     }
     res.send({ status: "success", payload: cart });
   } catch (error) {
-    logger.error(error);
+    req.logger.error(error.message);
     res.status(500).send({ error: error.message });
   }
 };
@@ -46,13 +44,11 @@ export const addProductToCart = async (req, res) => {
     const cart = await getCartService(cid);
     const product = await getProductByIdService(pid);
     if (!cart) {
-      logger.error("Cart not found");
       return res
         .status(404)
         .send({ status: "error", message: "Cart not found" });
     }
     if (!product) {
-      logger.error("Product not found");
       return res
         .status(404)
         .send({ status: "error", message: "Product not found" });
@@ -60,7 +56,7 @@ export const addProductToCart = async (req, res) => {
     const result = await updateCartService(cid, pid, 1);
     res.status(201).send({ status: "success", payload: result });
   } catch (error) {
-    logger.error(error);
+    req.logger.error(error.message);
     res.status(500).send({ error: error.message });
   }
 };
@@ -77,6 +73,7 @@ export const deleteCart = async (req, res) => {
     const result = await deleteCartService(cid);
     res.status(200).send({ status: "success", payload: result });
   } catch (error) {
+    req.logger.error(error.message);
     res.status(500).send({ status: "error", message: error.message });
   }
 };
@@ -88,13 +85,11 @@ export const deleteProductFromCart = async (req, res) => {
     const cart = await getCartService(cid);
     const product = await getProductByIdService(pid);
     if (!cart) {
-      logger.error("Cart not found"); // Cambia a logger.error
       return res
         .status(404)
         .send({ status: "error", message: "Cart not found" });
     }
     if (!product) {
-      logger.error("Product not found"); // Cambia a logger.error
       return res
         .status(404)
         .send({ status: "error", message: "Product not found" });
@@ -102,7 +97,7 @@ export const deleteProductFromCart = async (req, res) => {
     const result = await deleteProductFromCartService(cid, pid);
     res.status(200).send({ status: "success", payload: result });
   } catch (error) {
-    logger.error(error); // Cambia a logger.error
+    req.logger.error(error.message);
     res.status(500).send({ error: error.message });
   }
 };
@@ -112,14 +107,12 @@ export const updateCart = async (req, res) => {
     const { products } = req.body;
     const { cid } = req.params;
     if (!products) {
-      logger.error("Incomplete values"); // Cambia a logger.error
       return res
         .status(422)
         .send({ status: "error", message: "Incomplete values" });
     }
     const cart = await getCartService(cid);
     if (!cart) {
-      logger.error("Cart not found"); // Cambia a logger.error
       return res
         .status(404)
         .send({ status: "error", message: "Cart not found" });
@@ -127,7 +120,7 @@ export const updateCart = async (req, res) => {
     const result = await updateFullCartService(cid, products);
     res.status(201).send({ status: "success", payload: result });
   } catch (error) {
-    logger.error(error); // Cambia a logger.error
+    req.logger.error(error.message);
     res.status(500).send({ status: "error", message: error.message });
   }
 };
@@ -140,25 +133,24 @@ export const updateProductInCart = async (req, res) => {
     const cart = await getCartService(cid);
     const product = await getProductByIdService(pid);
     if (!cart) {
-      logger.error("Cart not found"); // Cambia a logger.error
       return res
         .status(404)
         .send({ status: "error", message: "Cart not found" });
     }
     if (!product) {
-      logger.error("Product not found"); // Cambia a logger.error
       return res
         .status(404)
         .send({ status: "error", message: "Product not found" });
     }
-
-    const result = await updateCartService(cid, pid, amount.quantity);
+    const user = req.user.email;
+    const result = await updateCartService(cid, pid, amount.quantity, user);
     res.status(201).send({ status: "success", payload: result });
   } catch (error) {
-    logger.error(error); // Cambia a logger.error
+    req.logger.error(error.message);
     res.status(500).send({ error: error.message });
   }
 };
+
 export const purchase = async (req, res) => {
   try {
     const { cid } = req.params;
@@ -167,7 +159,7 @@ export const purchase = async (req, res) => {
 
     res.send({ result });
   } catch (error) {
-    logger.error(error);
+    req.logger.error(error.message);
     res.status(500).send();
   }
 };
