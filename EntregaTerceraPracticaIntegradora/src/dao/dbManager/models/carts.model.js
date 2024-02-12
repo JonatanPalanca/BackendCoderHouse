@@ -1,3 +1,36 @@
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Cart:
+ *       type: object
+ *       properties:
+ *         products:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               product:
+ *                 $ref: '#/components/schemas/Product'
+ *               quantity:
+ *                 type: number
+ *                 default: 1
+ *       example:
+ *         products: [
+ *           {
+ *             product: {
+ *               title: "Product A",
+ *               description: "Description of Product A",
+ *               price: 49.99,
+ *               thumbnail: "image1.jpg",
+ *               code: "ABC123",
+ *               stock: 15
+ *             },
+ *             quantity: 2
+ *           }
+ *         ]
+ */
+
 import mongoose from "mongoose";
 const cartsCollection = "carts";
 const cartsSchema = new mongoose.Schema({

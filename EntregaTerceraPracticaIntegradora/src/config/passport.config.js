@@ -30,7 +30,6 @@ const initializePassport = () => {
           const carrito = await cartManager.save();
 
           const email = profile.emails[0].value;
-
           const user = await userManager.getUserByEmail(email);
 
           if (!user) {
@@ -49,6 +48,7 @@ const initializePassport = () => {
             return done(null, user);
           }
         } catch (error) {
+          console.log(error);
           return done(`Incorrect credentials`);
         }
       }
@@ -64,7 +64,7 @@ const initializePassport = () => {
       },
       async (req, username, password, done) => {
         try {
-          const { first_name, last_name, age } = req.body;
+          const { first_name, last_name, age, cart } = req.body;
           if (!first_name || !last_name || !username || !age || !password) {
             return done(null, false);
           }
@@ -74,26 +74,20 @@ const initializePassport = () => {
             return done(null, false);
           }
 
-          // Crear un nuevo carrito
-          const newCart = await cartManager.save();
-
           const userToSave = {
             first_name,
             last_name,
             email: username,
             age,
             password: createHash(password),
-            cart: newCart._id,
+            cart,
             role: username === "adminCoder@coder.com" ? "admin" : "user",
           };
 
           const result = await userManager.save(userToSave);
-
-          req.session.cart = newCart;
-
           return done(null, result);
         } catch (error) {
-          return done(error);
+          return done(`Incorrect credentials`);
         }
       }
     )
@@ -144,6 +138,7 @@ const initializePassport = () => {
 
   passport.deserializeUser(async (id, done) => {
     const user = await usersModel.findById(id);
+    done(null, user);
   });
 };
 

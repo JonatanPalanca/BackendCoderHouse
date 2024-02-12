@@ -21,6 +21,9 @@ import sessionsRouter from "./routes/sessions.router.js";
 import cookieParser from "cookie-parser";
 import errorHandler from "./middlewares/errors/index.js";
 import { addLogger } from "./logger.js";
+import cors from "cors";
+import swaggerUi from "swagger-ui-express";
+import swaggerSpec from "./config/swaggerConfig.js";
 
 const app = express();
 
@@ -73,6 +76,7 @@ app.use("/api/products", productsRouter);
 app.use("/api/carts", cartsRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/sessions", sessionsRouter);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use((req, res) => {
   res.status(404).send("Error 404: Page Not Found");
@@ -88,6 +92,9 @@ app.use((err, req, res, next) => {
     next(err);
   }
 });
+
+// Configurar CORS
+app.use(cors());
 
 app.use(errorHandler);
 

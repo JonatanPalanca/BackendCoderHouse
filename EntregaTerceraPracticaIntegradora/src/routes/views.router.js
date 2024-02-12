@@ -1,3 +1,10 @@
+/**
+ * @swagger
+ * tags:
+ *   name: Products
+ *   description: Operaciones relacionadas con productos
+ */
+
 import { Router } from "express";
 import passport from "passport";
 const router = Router();
@@ -16,7 +23,27 @@ const publicAccess = (req, res, next) => {
   next();
 };
 
-//RUTAS DE PRODUCTOS
+/**
+ * @swagger
+ * /api/products/realtimeproducts:
+ *   get:
+ *     summary: Obtener productos en tiempo real.
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de productos en tiempo real.
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: success
+ *               payload: { products: [...] }
+ *       401:
+ *         description: Acceso no autorizado.
+ *       500:
+ *         description: Error interno del servidor.
+ */
 router.get("/realtimeproducts", redirectToLogin, async (req, res) => {
   try {
     const products = await productManager.getAll();
@@ -26,6 +53,23 @@ router.get("/realtimeproducts", redirectToLogin, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/products/mockingproducts:
+ *   get:
+ *     summary: Obtener productos simulados para pruebas.
+ *     tags: [Products]
+ *     responses:
+ *       200:
+ *         description: Lista de productos simulados.
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: success
+ *               payload: { products: [...] }
+ *       500:
+ *         description: Error interno del servidor.
+ */
 router.get("/mockingproducts", async (req, res) => {
   try {
     let products = [];
@@ -38,6 +82,20 @@ router.get("/mockingproducts", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/products/loggerTest:
+ *   get:
+ *     summary: Ejecutar pruebas de registro.
+ *     tags: [Products]
+ *     responses:
+ *       200:
+ *         description: Pruebas de registro ejecutadas con éxito.
+ *         content:
+ *           application/json:
+ *             example:
+ *               result: "OK"
+ */
 router.get("/loggerTest", (req, res) => {
   req.logger.fatal("prueba fatal");
   req.logger.error("prueba error");
@@ -49,10 +107,56 @@ router.get("/loggerTest", (req, res) => {
   res.send({ result: "OK" });
 });
 
+/**
+ * @swagger
+ * /api/products/products:
+ *   get:
+ *     summary: Obtener lista de productos paginada y filtrada.
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         description: Número de página.
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: limit
+ *         description: Número de elementos por página.
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: sort
+ *         description: Campo para ordenar (price).
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: queryValue
+ *         description: Valor para filtrar (puede ser precio o stock dependiendo de la query).
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: query
+ *         description: Campo para filtrar (price o stock).
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Lista de productos paginada y filtrada.
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: success
+ *               payload: { products: [...], hasPrevPage: true, hasNextPage: true, nextPage: 2, prevPage: 1 }
+ *       401:
+ *         description: Acceso no autorizado.
+ *       500:
+ *         description: Error interno del servidor.
+ */
 router.get("/products", redirectToLogin, async (req, res) => {
   try {
     const { page = 1, limit = 10, sort, queryValue, query } = req.query;
-
     const filtered =
       query == "price" || query == "stock"
         ? { [query]: { $gt: queryValue } }
@@ -77,7 +181,6 @@ router.get("/products", redirectToLogin, async (req, res) => {
 
     res.render("home", {
       products: docs,
-
       user: req.user,
       hasPrevPage,
       hasNextPage,
@@ -93,6 +196,44 @@ router.get("/products", redirectToLogin, async (req, res) => {
     return res.send({ status: "error", error: error });
   }
 });
+
+/**
+ * @swagger
+ * /api/products/home:
+ *   get:
+ *     summary: Obtener lista de productos paginada.
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         description: Número de página.
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: limit
+ *         description: Número de elementos por página.
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: sort
+ *         description: Campo para ordenar (price).
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Lista de productos paginada.
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: success
+ *               payload: { products: [...], hasPrevPage: true, hasNextPage: true, nextPage: 2, prevPage: 1 }
+ *       401:
+ *         description: Acceso no autorizado.
+ *       500:
+ *         description: Error interno del servidor.
+ */
 router.get("/home", redirectToLogin, async (req, res) => {
   try {
     const { page = 1, limit = 10, sort } = req.query;
@@ -103,8 +244,12 @@ router.get("/home", redirectToLogin, async (req, res) => {
         { sort: { price: sort }, page, limit, lean: true }
       );
 
-    const prevLink = hasPrevPage ? `/?page=${prevPage}&limit=${limit}` : null;
-    const nextLink = hasNextPage ? `/?page=${nextPage}&limit=${limit}` : null;
+    const prevLink = hasPrevPage
+      ? `/api/products/home?page=${prevPage}&limit=${limit}`
+      : null;
+    const nextLink = hasNextPage
+      ? `/api/products/home?page=${nextPage}&limit=${limit}`
+      : null;
     res.send({
       status: "success",
       payload: docs,
@@ -123,6 +268,27 @@ router.get("/home", redirectToLogin, async (req, res) => {
 });
 
 //RUTA DE CARRITO
+/**
+ * @swagger
+ * /api/carts/{cid}/details:
+ *   get:
+ *     summary: Obtener detalles de un carrito por ID
+ *     tags: [Cart]
+ *     parameters:
+ *       - in: path
+ *         name: cid
+ *         required: true
+ *         description: ID del carrito
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Detalles del carrito
+ *       404:
+ *         description: Carrito no encontrado
+ *       500:
+ *         description: Error interno del servidor
+ */
 router.get("/carts/:cid", async (req, res) => {
   try {
     const cid = req.params.cid;

@@ -2,6 +2,44 @@ import mongoose from "mongoose";
 const productsCollecion = "products";
 import mongoosePaginate from "mongoose-paginate-v2";
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Product:
+ *       type: object
+ *       properties:
+ *         title:
+ *           type: string
+ *           description: Título del producto.
+ *         description:
+ *           type: string
+ *           description: Descripción del producto.
+ *         price:
+ *           type: number
+ *           description: Precio del producto.
+ *         thumbnail:
+ *           type: string
+ *           description: URL de la imagen del producto.
+ *         code:
+ *           type: string
+ *           description: Código único del producto.
+ *         category:
+ *           type: string
+ *           description: Categoría del producto.
+ *         stock:
+ *           type: number
+ *           description: Cantidad disponible en stock.
+ *         status:
+ *           type: boolean
+ *           default: true
+ *           description: Estado del producto (activo o inactivo).
+ *         owner:
+ *           type: string
+ *           default: admin
+ *           description: Propietario del producto.
+ */
+
 const productsSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -15,13 +53,11 @@ const productsSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  thumbanil: {
+  thumbnail: {
     type: String,
   },
-
   code: {
     type: String,
-
     required: true,
   },
   category: {
@@ -43,4 +79,12 @@ const productsSchema = new mongoose.Schema({
 });
 
 productsSchema.plugin(mongoosePaginate);
+
+/**
+ * @swagger
+ * tags:
+ *   name: Products
+ *   description: Operaciones relacionadas con productos
+ */
+
 export const productsModel = mongoose.model(productsCollecion, productsSchema);
