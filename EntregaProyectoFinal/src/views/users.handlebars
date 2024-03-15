@@ -1,0 +1,19 @@
+<h1>Lista de Usuarios</h1>
+<ul class="user-list">
+  {{#each users}}
+  <li>
+    <strong>Nombre:</strong>
+    {{this.first_name}} {{this.last_name}}<br />
+    <strong>Correo:</strong>
+    {{this.email}}<br />
+    <strong>Rol:</strong>
+    {{this.role}}<br />
+    <button onclick="updateRole('{{this.email}}', 'admin')">Promover a Admin</button>
+    <button onclick="updateRole('{{this.email}}', 'admin')">Promover a Premium</button>
+    <button onclick="updateRole('{{this.email}}', 'user')">Degradar a Usuario</button>
+    <button onclick="deleteUser('{{this.email}}')">Eliminar Usuario</button>
+  </li>
+  {{/each}}
+</ul>
+
+<script src="/js/user.js"></script>

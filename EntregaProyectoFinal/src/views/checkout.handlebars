@@ -1,0 +1,14 @@
+<h1>Proceso de Pago</h1>
+<div class="summary">
+  <h2>Resumen de la Compra</h2>
+  <ul>
+    {{#each products}}
+      <li>{{this.title}} - {{this.quantity}} - ${{this.price}}</li>
+    {{/each}}
+  </ul>
+  <p>Total: ${{total}}</p>
+</div>
+<form action="/confirmation" method="POST">
+  <input type="hidden" name="total" value="{{total}}" />
+  <button type="submit" class="btn">Confirmar Compra</button>
+</form>
